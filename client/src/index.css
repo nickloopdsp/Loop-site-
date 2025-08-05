@@ -215,21 +215,27 @@ h2 {
 .hero-loop-content {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   height: 100%;
   padding: 0 2.2rem;
+  position: relative;
 }
 
 .scroll {
   font-family: "Monument Grotesk Variable", sans-serif;
-  font-size: 5.1rem;
-  line-height: 0.5;
+  font-size: 3.5rem;
+  line-height: 1;
   color: var(--swatch-1);
+  position: absolute;
+  right: 8%;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 @media (max-width: 768px) {
   .scroll { 
-    font-size: 1.75rem; 
+    font-size: 2.5rem;
+    right: 5%;
   }
 }
 
