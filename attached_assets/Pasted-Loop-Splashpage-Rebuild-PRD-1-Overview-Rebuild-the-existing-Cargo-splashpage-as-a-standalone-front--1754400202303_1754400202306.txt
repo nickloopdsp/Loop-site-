@@ -1,0 +1,492 @@
+Loop Splashpage Rebuild PRD
+1. Overview
+Rebuild the existing Cargo splashpage as a standalone front-end (HTML/CSS/JS). Must match visuals, animations, and responsiveness exactly, plus add a glass-style FAQ chatbox powered by OpenAI.
+
+2. Sections & Snippets
+2.1 File Structure Suggestion
+bash
+Copy
+Edit
+/public
+  index.html
+  /assets
+    LoopIconNew.png
+/src
+  /css
+    variables.css
+    global.css
+    header.css
+    hero-loop.css
+    splash-hero.css
+    chatbox.css
+    footer.css
+  /js
+    splash-animations.js
+    chatbox.js
+3. Global Styles & Variables
+<details> <summary><code>/src/css/variables.css</code></summary>
+css
+Copy
+Edit
+:root {
+  /* header height for offsets */
+  --header-height: 60px;
+
+  /* color palette */
+  --black: #000;
+  --white: #fff;
+  --loop-green: #02ea98;
+
+  /* swatches for overlays */
+  --swatch-1: rgba(255,255,255,0.85);
+  --swatch-2: rgba(255,255,255,0.75);
+  --swatch-3: rgba(255,255,255,0.6);
+
+  /* font sizes */
+  --font-base: 0.55rem;
+  --font-base-mobile: 1.75rem;
+}
+</details> <details> <summary><code>/src/css/global.css</code></summary>
+css
+Copy
+Edit
+/* Reset & prevent horizontal scroll */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; overflow-x: hidden; background: var(--black); }
+
+/* Base typography */
+body {
+  font-family: "Diatype Variable", sans-serif;
+  font-size: var(--font-base);
+  color: var(--swatch-1);
+  line-height: 1;
+}
+@media (max-width: 768px) {
+  body { font-size: var(--font-base-mobile); }
+}
+
+/* Utility classes */
+.small-caps { font-variant: small-caps; text-transform: lowercase; }
+.highlight { color: var(--loop-green); }
+
+/* Link reset */
+a { text-decoration: none; color: inherit; }
+
+/* Headers */
+h1, h2 { margin: 0; font-variation-settings: 'slnt' 0, 'MONO' 0; }
+h1 { font-size: 4.5rem; line-height: 1; }
+h2 { font-size: 3.8rem; line-height: 1.1; }
+
+/* Prevent text selection during animation */
+.animation-container, .pulsing-lines, .gradient-sphere { user-select: none; }
+</details>
+4. Header
+Sticky, blurred glass header with logo + CTAs
+
+<details> <summary>HTML (<code>index.html</code>)</summary>
+html
+Copy
+Edit
+<header class="site-header">
+  <a class="logo" href="/">
+    <img src="assets/LoopIconNew.png" alt="Loop Logo" />
+  </a>
+  <nav class="nav-links">
+    <a class="btn" href="mailto:nick@loopdsp.com">Contact</a>
+    <a class="btn" href="https://instagram.com/loop_mp3" target="_blank">Instagram</a>
+  </nav>
+</header>
+</details> <details> <summary>CSS (<code>header.css</code>)</summary>
+css
+Copy
+Edit
+.site-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: rgba(0,0,0,0.0);
+  backdrop-filter: blur(20px);
+}
+
+/* Logo */
+.site-header .logo img {
+  width: 58px;
+  height: auto;
+}
+
+/* Nav buttons */
+.nav-links {
+  display: flex;
+  gap: 0.5rem;
+}
+.btn {
+  padding: 0.6rem 1rem;
+  background: var(--black);
+  color: var(--white);
+  border: 1px solid var(--white);
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+.btn:hover {
+  background: var(--white);
+  color: var(--black);
+  transform: scale(1.05);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .site-header {
+    padding: 1rem;
+  }
+  .logo img { width: 40px; }
+  .nav-links {
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+  .btn {
+    font-size: 2.2rem;
+    padding: 1.5rem 2rem;
+    border-width: 0.3px;
+  }
+}
+</details>
+5. “Loop” Display Panel
+Full-viewport “Loop” text, click-through under header
+
+<details> <summary>HTML (just after `<header>…`)</summary>
+html
+Copy
+Edit
+<section class="hero-loop">
+  <div class="hero-loop-content">
+    <span class="scroll">Loop</span>
+  </div>
+</section>
+</details> <details> <summary>CSS (<code>hero-loop.css</code>)</summary>
+css
+Copy
+Edit
+.hero-loop {
+  position: relative;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--black);
+}
+.hero-loop-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  padding: 0 2.2rem;
+}
+.scroll {
+  font-family: "Monument Grotesk Variable", sans-serif;
+  font-size: 5.1rem;
+  line-height: 0.5;
+  color: var(--swatch-1);
+}
+@media (max-width: 768px) {
+  .scroll { font-size: 1.75rem; }
+}
+</details>
+6. Animated Hero Section (“Page 1”)
+Pulsing lines + gradient sphere + fade-in headline
+
+<details> <summary>HTML</summary>
+html
+Copy
+Edit
+<section class="page-hero">
+  <div class="animation-container">
+    <div class="pulsing line-1"></div>
+    <div class="pulsing line-2"></div>
+    <div class="pulsing line-3"></div>
+    <div class="gradient-sphere"></div>
+  </div>
+  <div class="hero-text">
+    <h1 class="headline">
+      The World’s <span class="highlight"><i>First</i></span><br>
+      Digital Music Manager
+    </h1>
+  </div>
+</section>
+<script src="js/splash-animations.js"></script>
+</details> <details> <summary>CSS (<code>splash-hero.css</code>)</summary>
+css
+Copy
+Edit
+.page-hero {
+  position: relative;
+  margin-bottom: -150px;   /* lifts next content under */
+  min-height: 80vh;
+}
+@media (max-width: 768px) {
+  .page-hero { margin-bottom: 0; min-height: 63vh; }
+}
+
+/* Animation container */
+.animation-container {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 450px; height: 450px;
+  pointer-events: none;
+  z-index: 0;
+}
+@media (max-width: 768px) {
+  .animation-container { width: 340px; height: 340px; }
+}
+
+/* Gradient sphere */
+.gradient-sphere {
+  position: absolute;
+  width: 450px; height: 450px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ff6ec7, #ffc700, #1e90ff, #ff6ec7);
+  box-shadow: 0 0 30px rgba(255,255,255,0.03),
+              0 0 60px rgba(255,255,255,0.3),
+              0 0 90px rgba(255,255,255,0.1);
+  animation: spin-globe 8s linear infinite;
+  opacity: 0; transition: opacity 0.5s;
+}
+.gradient-sphere::before {
+  content: ''; position: absolute; inset:0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #02ea98, #357784 70%);
+}
+.gradient-sphere::after {
+  content: ''; position: absolute; inset:0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 70% 70%, #048041, transparent 70%);
+}
+@keyframes spin-globe {
+  from { transform: rotate(90deg); }
+  to   { transform: rotate(450deg); }
+}
+@media (max-width: 768px) {
+  .gradient-sphere { width:150px; height:150px; }
+}
+
+/* Pulsing lines */
+.pulsing {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.46);
+  animation: pulse 6.5s infinite;
+  opacity: 0;
+}
+.pulsing.line-2 { animation-delay: 1s; }
+.pulsing.line-3 { animation-delay: 2s; }
+
+@keyframes pulse {
+  0%   { width:460px; height:460px; opacity:1; }
+  50%  { width:100vw; height:100vw; opacity:0.3; }
+  100% { width:115vw; height:115vw; opacity:0.1; }
+}
+@media (max-width: 768px) {
+  .pulsing { border-width:1.3px; animation-name: pulse-mobile; }
+}
+@keyframes pulse-mobile {
+  0%   { width:150px; height:150px; opacity:1; }
+  50%  { width:100vw; height:100vw; opacity:0.3; }
+  100% { width:115vw; height:115vw; opacity:0.1; }
+}
+
+/* Headline text */
+.hero-text {
+  position: relative; z-index:1;
+  padding: 0.4rem; color: var(--white);
+  opacity: 0; animation: fadeInText 2s ease-in-out forwards;
+}
+@keyframes fadeInText { to { opacity:1; } }
+.headline {
+  font-size: 7rem; line-height: .9;
+  filter: drop-shadow(0.1rem 0.1rem 0.64rem rgba(255,255,255,0.71));
+}
+@media (max-width: 768px) {
+  .headline {
+    font-size: 8rem; line-height: .2;
+    margin-top:10px; margin-left:6px;
+  }
+}
+</details> <details> <summary>JS (<code>splash-animations.js</code>)</summary>
+js
+Copy
+Edit
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.pulsing').forEach(el => el.style.opacity = 1);
+  setTimeout(() => {
+    document.querySelector('.gradient-sphere').style.opacity = 1;
+  }, 3000);
+  setTimeout(() => {
+    document.querySelector('.hero-text').style.opacity = 1;
+  }, 7000);
+});
+</details>
+7. Chatbox (Glass-Style FAQ)
+Positioned below the orb; OpenAI-powered FAQ assistant
+
+<details> <summary>HTML (insert inside <code>.page-hero</code> after animations)</summary>
+html
+Copy
+Edit
+<div class="chat-container">
+  <div class="chat-header">Ask Loop</div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <form class="chat-input" id="chatForm">
+    <input type="text" id="chatPrompt" placeholder="What can Loop do for me?" autocomplete="off" />
+    <button type="submit">Send</button>
+  </form>
+</div>
+<script src="js/chatbox.js"></script>
+</details> <details> <summary>CSS (<code>chatbox.css</code>)</summary>
+css
+Copy
+Edit
+.chat-container {
+  position: absolute;
+  top: calc(50% + 225px);   /* adjust 225px to sit under orb */
+  left: 50%; transform: translateX(-50%);
+  width: min(90vw, 400px); max-height: 500px;
+  display: flex; flex-direction: column;
+  backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius:16px; overflow:hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  z-index:1;
+}
+.chat-header {
+  padding:0.75rem 1rem; border-bottom:1px solid rgba(255,255,255,0.2);
+  color:#fff; font-weight:bold;
+}
+.chat-messages {
+  flex:1; padding:1rem; overflow-y:auto; color:#ececec; font-size:0.9rem;
+}
+.chat-input {
+  display:flex; border-top:1px solid rgba(255,255,255,0.2);
+}
+.chat-input input {
+  flex:1; padding:0.75rem 1rem; border:none; background:transparent;
+  color:#fff; font-size:1rem; outline:none;
+}
+.chat-input button {
+  padding:0.75rem 1rem; border:none; background:var(--loop-green);
+  color:#000; font-weight:bold; cursor:pointer; transition:transform 0.2s;
+}
+.chat-input button:active { transform:scale(0.95); }
+</details> <details> <summary>JS (<code>chatbox.js</code>)</summary>
+js
+Copy
+Edit
+const SYSTEM_PROMPT = `
+You are Loop’s MC assistant. You know that Loop is the world’s first digital music manager platform.
+Answer FAQs about Loop’s features, pricing, integrations, and sign-up process.
+Be concise, friendly, and helpful.
+`.trim();
+
+const form = document.getElementById('chatForm');
+const input = document.getElementById('chatPrompt');
+const messages = document.getElementById('chatMessages');
+
+async function sendMessage(text) {
+  // render user bubble
+  const userEl = document.createElement('div');
+  userEl.textContent = text;
+  userEl.style.textAlign = 'right';
+  messages.appendChild(userEl);
+
+  // call backend proxy
+  const res = await fetch('/.netlify/functions/openai', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt: text })
+  });
+  const { reply } = await res.json();
+
+  // render bot bubble
+  const botEl = document.createElement('div');
+  botEl.textContent = reply;
+  botEl.style.textAlign = 'left';
+  messages.appendChild(botEl);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const txt = input.value.trim();
+  if (!txt) return;
+  input.value = '';
+  sendMessage(txt);
+});
+Note: Implement a secure serverless function (/.netlify/functions/openai) that injects your OPENAI_API_KEY and forwards to https://api.openai.com/v1/chat/completions.
+
+8. Footer
+Black footer with investor contact + brand name
+
+<details> <summary>HTML</summary>
+html
+Copy
+Edit
+<footer class="site-footer">
+  <div class="footer-stars"></div>
+  <p class="footer-text">
+    Investors please reach out at
+    <a href="mailto:Nick@LoopDSP.com">Nick@LoopDSP.com</a>
+  </p>
+  <p class="footer-text">
+    All Rights Reserved, <span class="brand-name">Loop DSP, LLC</span>
+  </p>
+</footer>
+</details> <details> <summary>CSS (<code>footer.css</code>)</summary>
+css
+Copy
+Edit
+.site-footer {
+  background: var(--black);
+  color: var(--white);
+  text-align: center;
+  padding: 2rem 1rem;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+  position: relative;
+  width: 100%;
+}
+.site-footer a {
+  color: var(--loop-green);
+  font-weight:bold;
+  transition: color 0.3s, transform 0.3s;
+}
+.site-footer a:hover {
+  color: var(--white);
+  transform: scale(1.1);
+}
+.brand-name {
+  color: var(--loop-green);
+  text-transform:uppercase;
+  font-weight:bold;
+}
+/* Optional: animated starfield in .footer-stars */
+.footer-stars { position:absolute; inset:0; /* implement via CSS keyframes or canvas */ }
+</details>
+9. Acceptance Criteria
+Visual Fidelity: ±2 px match across desktop/mobile.
+
+Animations: timing, easing, and z-index exactly as above.
+
+Responsiveness: breakpoints at 768 px and 1024 px must match Cargo’s behavior.
+
+Chatbox: renders, sends user input, displays AI replies via secure backend.
+
+Performance: smooth 60 fps, no layout shifts, no console errors.
+
+Accessibility: focus states on buttons/inputs, ≥3:1 contrast for text on glass.
