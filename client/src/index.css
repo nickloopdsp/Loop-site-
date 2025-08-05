@@ -9,7 +9,7 @@
   /* color palette */
   --black: hsl(0, 0%, 0%);
   --white: hsl(0, 0%, 100%);
-  --loop-green: hsl(151, 97%, 46%);
+  --loop-green: #02EA98;
 
   /* swatches for overlays */
   --swatch-1: hsla(0, 0%, 100%, 0.85);
@@ -19,6 +19,16 @@
   /* font sizes */
   --font-base: 0.55rem;
   --font-base-mobile: 1.75rem;
+
+  /* Apple Liquid Glass variables */
+  --glass-bg: rgba(255, 255, 255, 0.02);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --glass-blur: 20px;
+  --glass-saturation: 160%;
+  --glass-tint: #02ea98;
+  --mouse-x: 0.5;
+  --mouse-y: 0.5;
 
   /* shadcn variables */
   --background: hsl(0, 0%, 100%);
@@ -260,14 +270,15 @@ h2 {
   justify-content: center;
   flex-direction: column;
   overflow: visible;
-  padding-bottom: 120px; /* Space for chatbox padding */
+  padding-bottom: 120px;
+  margin-bottom: 150px; /* Push footer down without affecting content positioning */
 }
 
 @media (max-width: 768px) {
   .page-hero { 
-    margin-bottom: 0; 
     min-height: 110vh;
-    padding-bottom: 100px; /* Mobile chatbox padding */
+    padding-bottom: 100px;
+    margin-bottom: 120px; /* Mobile footer spacing */
   }
 }
 
@@ -375,7 +386,7 @@ h2 {
 /* Headline text */
 .hero-text {
   position: absolute;
-  top: 50%;
+  top: 47%;
   left: 4%;
   transform: translateY(-50%);
   z-index: 5;
@@ -416,52 +427,155 @@ h2 {
   }
 }
 
-/* Chatbox Styles */
+/* Chatbox Styles - Apple Liquid Glass (True Implementation) */
 .chat-container {
   position: absolute;
-  top: 95%;
+  top: calc(50vh + 320px);
   left: 50%; 
-  transform: translate(-50%, -50%);
-  width: min(85vw, 450px); 
-  max-height: 400px;
+  transform: translateX(-50%);
+  width: min(90vw, 520px);
+  max-height: 320px;
   display: flex; 
   flex-direction: column;
-  backdrop-filter: blur(20px);
-  background: hsla(0, 0%, 100%, 0.1);
-  border: 1px solid hsla(0, 0%, 100%, 0.25);
-  border-radius: 16px; 
-  overflow: hidden;
-  box-shadow: 0 8px 32px hsla(0, 0%, 0%, 0.2);
+  padding: 1rem;
+  border-radius: 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  /* Inner bevel + outer glow for optical depth */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
   z-index: 100;
+}
+
+/* Feature detection with full vibrancy stack */
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .chat-container {
+    backdrop-filter:
+      saturate(180%)
+      contrast(120%)
+      brightness(110%)
+      blur(var(--glass-blur));
+    -webkit-backdrop-filter:
+      saturate(180%)
+      contrast(120%)
+      brightness(110%)
+      blur(var(--glass-blur));
+  }
+  
+  .chat-container:hover {
+    backdrop-filter:
+      saturate(200%)
+      contrast(130%)
+      brightness(115%)
+      blur(calc(var(--glass-blur) + 8px));
+    -webkit-backdrop-filter:
+      saturate(200%)
+      contrast(130%)
+      brightness(115%)
+      blur(calc(var(--glass-blur) + 8px));
+  }
+}
+
+/* Static specular highlight layer */
+.chat-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    hsla(0, 0%, 100%, 0.2) 0%,
+    hsla(0, 0%, 100%, 0) 100%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* True vibrancy tint layer */
+.chat-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at calc(var(--mouse-x) * 100%) calc(var(--mouse-y) * 100%),
+    rgba(2, 234, 152, 0.3) 0%,
+    rgba(2, 234, 152, 0.1) 25%,
+    transparent 60%
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.4;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.chat-container:hover {
+  transform: translateX(-50%) scale(1.02);
+}
+
+.chat-container:hover::after {
+  opacity: 0.6;
 }
 
 @media (max-width: 768px) {
   .chat-container {
-    top: 90%;
-    width: min(90vw, 350px);
-    max-height: 350px;
+    width: min(90vw, 420px);
+    max-height: 280px;
   }
 }
 
+/* Simplified child elements - no glass effects */
 .chat-header {
-  padding: 0.75rem 1rem; 
-  border-bottom: 1px solid hsla(0, 0%, 100%, 0.2);
-  color: #fff; 
-  font-weight: bold;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid hsla(0, 0%, 100%, 0.15);
+  color: hsla(0, 0%, 100%, 0.95);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  background: transparent;
 }
 
 .chat-messages {
   flex: 1; 
   padding: 1rem; 
   overflow-y: auto; 
-  color: #ececec; 
+  color: hsla(0, 0%, 100%, 0.9);
   font-size: 0.9rem;
   min-height: 200px;
+  background: transparent;
+  
+  /* Minimal scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: hsla(0, 0%, 100%, 0.2) transparent;
+}
+
+.chat-messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: hsla(0, 0%, 100%, 0.2);
+  border-radius: 2px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: hsla(0, 0%, 100%, 0.3);
 }
 
 .chat-input {
-  display: flex; 
-  border-top: 1px solid hsla(0, 0%, 100%, 0.2);
+  display: flex;
+  border-top: 1px solid hsla(0, 0%, 100%, 0.15);
+  background: transparent;
+  padding-top: 0.75rem;
+  padding-bottom: 0.25rem;
 }
 
 .chat-input input {
@@ -469,32 +583,44 @@ h2 {
   padding: 0.75rem 1rem; 
   border: none; 
   background: transparent;
-  color: #fff; 
-  font-size: 1rem; 
+  color: hsla(0, 0%, 100%, 0.95);
+  font-size: 0.95rem; 
   outline: none;
 }
 
 .chat-input input::placeholder {
-  color: hsla(0, 0%, 100%, 0.6);
+  color: hsla(0, 0%, 100%, 0.5);
 }
 
 .chat-input button {
-  padding: 0.75rem 1rem; 
+  padding: 0.25rem 1rem; 
   border: none; 
+  border-radius: 50px;
   background: var(--loop-green);
-  color: #000; 
-  font-weight: bold; 
+  color: hsla(0, 0%, 0%, 0.9);
+  font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer; 
-  transition: transform 0.2s;
+  transition: transform 0.2s ease;
+}
+
+.chat-input button:hover {
+  background: rgba(2, 234, 152, 0.8);
+  backdrop-filter: blur(10px) saturate(150%);
+  -webkit-backdrop-filter: blur(10px) saturate(150%);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 4px 12px rgba(2, 234, 152, 0.2);
 }
 
 .chat-input button:active { 
-  transform: scale(0.95); 
+  transform: scale(0.95);
 }
 
 .message {
   margin-bottom: 1rem;
   padding: 0.5rem;
+  background: transparent;
 }
 
 .user-message {
@@ -504,22 +630,25 @@ h2 {
 
 .bot-message {
   text-align: left;
-  color: #ececec;
+  color: hsla(0, 0%, 100%, 0.85);
 }
 
 /* Footer Styles */
 .site-footer {
-  background: var(--black);
+  background: transparent;
   color: var(--white);
   text-align: center;
-  padding: 1.5rem 1rem;
+  padding: 8rem 1rem 2rem 1rem;
   font-family: Arial, sans-serif;
   font-size: 0.85rem;
   position: relative;
   width: 100%;
   z-index: 50;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: auto;
+}
+
+.footer-text {
+  opacity: 0.7;
 }
 
 .site-footer a {
@@ -539,12 +668,12 @@ h2 {
   font-weight: bold;
 }
 
-/* Loading Animation for Chat */
+/* Simple loading animation */
 .loading {
   display: inline-block;
   width: 20px;
   height: 20px;
-  border: 3px solid hsla(0, 0%, 100%, 0.3);
+  border: 2px solid hsla(0, 0%, 100%, 0.3);
   border-radius: 50%;
   border-top-color: var(--loop-green);
   animation: spin 1s ease-in-out infinite;
@@ -552,6 +681,49 @@ h2 {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Comprehensive accessibility fallbacks */
+@media (prefers-reduced-transparency: reduce) {
+  .chat-container {
+    background: rgba(17, 17, 17, 0.9) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  }
+  
+  .chat-container::after,
+  .chat-container::before {
+    display: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .chat-container {
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-container {
+    transition: none !important;
+  }
+  
+  .chat-container::after {
+    transition: none !important;
+  }
+  
+  .chat-container::before {
+    animation: none !important;
+  }
+  
+  .loading {
+    animation: none !important;
+    border-top-color: var(--loop-green);
+  }
 }
 
 /* Optional: animated starfield in .footer-stars */

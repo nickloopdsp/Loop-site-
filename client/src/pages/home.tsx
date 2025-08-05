@@ -12,7 +12,7 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "👋 Hi! I'm Loop's assistant. Ask me anything about Loop's features, pricing, or how to get started!",
+      text: "👋 Hey, I'm MC, your personal Music Concierge. Ask me anything you need to know about Loop.",
       isUser: false,
       timestamp: new Date()
     }
@@ -20,6 +20,7 @@ export default function Home() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -53,9 +54,53 @@ export default function Home() {
       }
     }, 7000);
 
+    // Apple Liquid Glass interactive cursor tracking with throttling
+    const chatContainer = chatContainerRef.current;
+    let ticking = false;
+    
+    const updateMousePosition = (clientX: number, clientY: number) => {
+      if (!chatContainer || ticking) return;
+      
+      ticking = true;
+      requestAnimationFrame(() => {
+        const { left, top, width, height } = chatContainer.getBoundingClientRect();
+        const x = (clientX - left) / width;
+        const y = (clientY - top) / height;
+        
+        // Clamp values between 0 and 1
+        const clampedX = Math.max(0, Math.min(1, x));
+        const clampedY = Math.max(0, Math.min(1, y));
+        
+        chatContainer.style.setProperty('--mouse-x', clampedX.toString());
+        chatContainer.style.setProperty('--mouse-y', clampedY.toString());
+        
+        ticking = false;
+      });
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      updateMousePosition(e.clientX, e.clientY);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        updateMousePosition(touch.clientX, touch.clientY);
+      }
+    };
+
+    if (chatContainer) {
+      chatContainer.addEventListener('mousemove', handleMouseMove);
+      chatContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
+    }
+
     return () => {
       clearTimeout(sphereTimer);
       clearTimeout(textTimer);
+      if (chatContainer) {
+        chatContainer.removeEventListener('mousemove', handleMouseMove);
+        chatContainer.removeEventListener('touchmove', handleTouchMove);
+      }
     };
   }, []);
 
@@ -143,8 +188,8 @@ export default function Home() {
         </div>
 
         {/* Chat Container */}
-        <div className="chat-container" data-testid="chat-container">
-          <div className="chat-header" data-testid="chat-header">Ask Loop</div>
+        <div ref={chatContainerRef} className="chat-container" data-testid="chat-container">
+          <div className="chat-header" data-testid="chat-header">Ask MC</div>
           <div className="chat-messages" data-testid="chat-messages">
             {messages.map((message) => (
               <div 
@@ -186,10 +231,6 @@ export default function Home() {
       {/* Site Footer */}
       <footer className="site-footer" data-testid="site-footer">
         <div className="footer-stars" data-testid="footer-stars"></div>
-        <p className="footer-text" data-testid="footer-text-1">
-          Investors please reach out at{' '}
-          <a href="mailto:Nick@LoopDSP.com" data-testid="investor-email">Nick@LoopDSP.com</a>
-        </p>
         <p className="footer-text" data-testid="footer-text-2">
           All Rights Reserved, <span className="brand-name" data-testid="brand-name">Loop DSP, LLC</span>
         </p>
