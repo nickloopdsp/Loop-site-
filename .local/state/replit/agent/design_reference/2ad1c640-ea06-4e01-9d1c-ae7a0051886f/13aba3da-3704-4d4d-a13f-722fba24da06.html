@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loop - The World's First Digital Music Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'loop-green': '#02ea98',
+                        'glass-white-85': 'rgba(255,255,255,0.85)',
+                        'glass-white-75': 'rgba(255,255,255,0.75)',
+                        'glass-white-60': 'rgba(255,255,255,0.6)',
+                    },
+                    fontFamily: {
+                        'diatype': ['Inter', 'sans-serif'], // Fallback to Inter
+                        'monument': ['Inter', 'sans-serif'], // Fallback to Inter
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        /* CSS Variables */
+        :root {
+            --header-height: 60px;
+            --black: #000;
+            --white: #fff;
+            --loop-green: #02ea98;
+            --swatch-1: rgba(255,255,255,0.85);
+            --swatch-2: rgba(255,255,255,0.75);
+            --swatch-3: rgba(255,255,255,0.6);
+            --font-base: 0.55rem;
+            --font-base-mobile: 1.75rem;
+        }
+
+        /* Global Styles */
+        *, *::before, *::after { 
+            box-sizing: border-box; 
+        }
+        
+        html, body { 
+            margin: 0; 
+            padding: 0; 
+            overflow-x: hidden; 
+            background: var(--black); 
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            font-size: var(--font-base);
+            color: var(--swatch-1);
+            line-height: 1;
+        }
+
+        @media (max-width: 768px) {
+            body { font-size: var(--font-base-mobile); }
+        }
+
+        .small-caps { 
+            font-variant: small-caps; 
+            text-transform: lowercase; 
+        }
+        
+        .highlight { 
+            color: var(--loop-green); 
+        }
+
+        h1, h2 { 
+            margin: 0; 
+        }
+        
+        h1 { 
+            font-size: 4.5rem; 
+            line-height: 1; 
+        }
+        
+        h2 { 
+            font-size: 3.8rem; 
+            line-height: 1.1; 
+        }
+
+        .animation-container, .pulsing-lines, .gradient-sphere { 
+            user-select: none; 
+        }
+
+        /* Header Styles */
+        .site-header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 1rem;
+            background: rgba(0,0,0,0.0);
+            backdrop-filter: blur(20px);
+            height: var(--header-height);
+        }
+
+        .site-header .logo img {
+            width: 58px;
+            height: auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1rem;
+            background: var(--black);
+            color: var(--white);
+            border: 1px solid var(--white);
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--white);
+            color: var(--black);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .site-header {
+                padding: 1rem;
+            }
+            .logo img { 
+                width: 40px; 
+            }
+            .nav-links {
+                flex-direction: column;
+                gap: 1.6rem;
+            }
+            .btn {
+                font-size: 2.2rem;
+                padding: 1.5rem 2rem;
+                border-width: 0.3px;
+            }
+        }
+
+        /* Hero Loop Styles */
+        .hero-loop {
+            position: relative;
+            top: var(--header-height);
+            height: calc(100vh - var(--header-height));
+            overflow: hidden;
+            pointer-events: none;
+            background: var(--black);
+        }
+
+        .hero-loop-content {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            padding: 0 2.2rem;
+        }
+
+        .scroll {
+            font-family: "Inter", sans-serif;
+            font-size: 5.1rem;
+            line-height: 0.5;
+            color: var(--swatch-1);
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .scroll { 
+                font-size: 1.75rem; 
+            }
+        }
+
+        /* Page Hero Styles */
+        .page-hero {
+            position: relative;
+            margin-bottom: -150px;
+            min-height: 80vh;
+        }
+
+        @media (max-width: 768px) {
+            .page-hero { 
+                margin-bottom: 0; 
+                min-height: 63vh; 
+            }
+        }
+
+        /* Animation Container */
+        .animation-container {
+            position: fixed;
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 450px; 
+            height: 450px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @media (max-width: 768px) {
+            .animation-container { 
+                width: 340px; 
+                height: 340px; 
+            }
+        }
+
+        /* Gradient Sphere */
+        .gradient-sphere {
+            position: absolute;
+            width: 450px; 
+            height: 450px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ff6ec7, #ffc700, #1e90ff, #ff6ec7);
+            box-shadow: 0 0 30px rgba(255,255,255,0.03),
+                        0 0 60px rgba(255,255,255,0.3),
+                        0 0 90px rgba(255,255,255,0.1);
+            animation: spin-globe 8s linear infinite;
+            opacity: 0; 
+            transition: opacity 0.5s;
+        }
+
+        .gradient-sphere::before {
+            content: ''; 
+            position: absolute; 
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #02ea98, #357784 70%);
+        }
+
+        .gradient-sphere::after {
+            content: ''; 
+            position: absolute; 
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at 70% 70%, #048041, transparent 70%);
+        }
+
+        @keyframes spin-globe {
+            from { transform: rotate(90deg); }
+            to   { transform: rotate(450deg); }
+        }
+
+        @media (max-width: 768px) {
+            .gradient-sphere { 
+                width: 150px; 
+                height: 150px; 
+            }
+        }
+
+        /* Pulsing Lines */
+        .pulsing {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.46);
+            animation: pulse 6.5s infinite;
+            opacity: 0;
+        }
+
+        .pulsing.line-2 { 
+            animation-delay: 1s; 
+        }
+        
+        .pulsing.line-3 { 
+            animation-delay: 2s; 
+        }
+
+        @keyframes pulse {
+            0%   { width: 460px; height: 460px; opacity: 1; }
+            50%  { width: 100vw; height: 100vw; opacity: 0.3; }
+            100% { width: 115vw; height: 115vw; opacity: 0.1; }
+        }
+
+        @media (max-width: 768px) {
+            .pulsing { 
+                border-width: 1.3px; 
+                animation-name: pulse-mobile; 
+            }
+        }
+
+        @keyframes pulse-mobile {
+            0%   { width: 150px; height: 150px; opacity: 1; }
+            50%  { width: 100vw; height: 100vw; opacity: 0.3; }
+            100% { width: 115vw; height: 115vw; opacity: 0.1; }
+        }
+
+        /* Hero Text */
+        .hero-text {
+            position: relative; 
+            z-index: 1;
+            padding: 0.4rem; 
+            color: var(--white);
+            opacity: 0; 
+            animation: fadeInText 2s ease-in-out forwards;
+        }
+
+        @keyframes fadeInText { 
+            to { opacity: 1; } 
+        }
+
+        .headline {
+            font-size: 7rem; 
+            line-height: .9;
+            filter: drop-shadow(0.1rem 0.1rem 0.64rem rgba(255,255,255,0.71));
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .headline {
+                font-size: 8rem; 
+                line-height: .2;
+                margin-top: 10px; 
+                margin-left: 6px;
+            }
+        }
+
+        /* Chatbox Styles */
+        .chat-container {
+            position: absolute;
+            top: calc(50% + 225px);
+            left: 50%; 
+            transform: translateX(-50%);
+            width: min(90vw, 400px); 
+            max-height: 500px;
+            display: flex; 
+            flex-direction: column;
+            backdrop-filter: blur(20px);
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 16px; 
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .chat-header {
+            padding: 0.75rem 1rem; 
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            color: #fff; 
+            font-weight: bold;
+        }
+
+        .chat-messages {
+            flex: 1; 
+            padding: 1rem; 
+            overflow-y: auto; 
+            color: #ececec; 
+            font-size: 0.9rem;
+            min-height: 200px;
+        }
+
+        .chat-input {
+            display: flex; 
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .chat-input input {
+            flex: 1; 
+            padding: 0.75rem 1rem; 
+            border: none; 
+            background: transparent;
+            color: #fff; 
+            font-size: 1rem; 
+            outline: none;
+        }
+
+        .chat-input input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .chat-input button {
+            padding: 0.75rem 1rem; 
+            border: none; 
+            background: var(--loop-green);
+            color: #000; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: transform 0.2s;
+        }
+
+        .chat-input button:active { 
+            transform: scale(0.95); 
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+        }
+
+        .user-message {
+            text-align: right;
+            color: var(--loop-green);
+        }
+
+        .bot-message {
+            text-align: left;
+            color: #ececec;
+        }
+
+        /* Footer Styles */
+        .site-footer {
+            background: var(--black);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem 1rem;
+            font-family: Arial, sans-serif;
+            font-size: 0.9rem;
+            position: relative;
+            width: 100%;
+            margin-top: 4rem;
+        }
+
+        .site-footer a {
+            color: var(--loop-green);
+            font-weight: bold;
+            transition: color 0.3s, transform 0.3s;
+            text-decoration: none;
+        }
+
+        .site-footer a:hover {
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        .brand-name {
+            color: var(--loop-green);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .footer-text {
+            margin: 0.5rem 0;
+        }
+
+        /* Loading Animation for Chat */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--loop-green);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- @COMPONENT: SiteHeader -->
+    <header class="site-header">
+        <a class="logo" href="/">
+            <!-- Placeholder logo - replace with actual Loop logo -->
+            <div class="w-14 h-14 bg-loop-green rounded-full flex items-center justify-center text-black font-bold text-lg">L</div>
+        </a>
+        <nav class="nav-links">
+            <a class="btn" href="mailto:nick@loopdsp.com">Contact</a>
+            <a class="btn" href="https://instagram.com/loop_mp3" target="_blank">Instagram</a>
+        </nav>
+    </header>
+    <!-- @END_COMPONENT: SiteHeader -->
+
+    <!-- @COMPONENT: HeroLoop -->
+    <section class="hero-loop">
+        <div class="hero-loop-content">
+            <span class="scroll">Loop</span>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: HeroLoop -->
+
+    <!-- @COMPONENT: PageHero -->
+    <section class="page-hero">
+        <div class="animation-container">
+            <div class="pulsing line-1"></div>
+            <div class="pulsing line-2"></div>
+            <div class="pulsing line-3"></div>
+            <div class="gradient-sphere"></div>
+        </div>
+        
+        <div class="hero-text">
+            <h1 class="headline">
+                The World's <span class="highlight"><i>First</i></span><br>
+                Digital Music Manager
+            </h1>
+        </div>
+
+        <!-- @COMPONENT: ChatContainer -->
+        <div class="chat-container">
+            <div class="chat-header">Ask Loop</div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    👋 Hi! I'm Loop's assistant. Ask me anything about Loop's features, pricing, or how to get started!
+                </div>
+            </div>
+            <form class="chat-input" id="chatForm">
+                <input type="text" id="chatPrompt" placeholder="What can Loop do for me?" autocomplete="off" />
+                <button type="submit">Send</button>
+            </form>
+        </div>
+        <!-- @END_COMPONENT: ChatContainer -->
+    </section>
+    <!-- @END_COMPONENT: PageHero -->
+
+    <!-- @COMPONENT: SiteFooter -->
+    <footer class="site-footer">
+        <div class="footer-stars"></div>
+        <p class="footer-text">
+            Investors please reach out at
+            <a href="mailto:Nick@LoopDSP.com">Nick@LoopDSP.com</a>
+        </p>
+        <p class="footer-text">
+            All Rights Reserved, <span class="brand-name">Loop DSP, LLC</span>
+        </p>
+    </footer>
+    <!-- @END_COMPONENT: SiteFooter -->
+
+    <script>
+        // Animation initialization
+        (() => {
+            window.addEventListener('DOMContentLoaded', () => {
+                // Start pulsing animations
+                document.querySelectorAll('.pulsing').forEach(el => {
+                    el.style.opacity = 1;
+                });
+                
+                // Show gradient sphere after 3 seconds
+                setTimeout(() => {
+                    const sphere = document.querySelector('.gradient-sphere');
+                    if (sphere) {
+                        sphere.style.opacity = 1;
+                    }
+                }, 3000);
+                
+                // Show hero text after 7 seconds
+                setTimeout(() => {
+                    const heroText = document.querySelector('.hero-text');
+                    if (heroText) {
+                        heroText.style.opacity = 1;
+                    }
+                }, 7000);
+            });
+        })();
+
+        // Chatbox functionality
+        (() => {
+            const SYSTEM_PROMPT = `
+            You are Loop's MC assistant. You know that Loop is the world's first digital music manager platform.
+            Answer FAQs about Loop's features, pricing, integrations, and sign-up process.
+            Be concise, friendly, and helpful.
+            `.trim();
+
+            const form = document.getElementById('chatForm');
+            const input = document.getElementById('chatPrompt');
+            const messages = document.getElementById('chatMessages');
+
+            // Sample responses for demo purposes
+            const sampleResponses = {
+                "what": "Loop is the world's first digital music manager! We help artists organize, distribute, and monetize their music across all platforms. Think of us as your personal music business assistant! 🎵",
+                "pricing": "Loop offers flexible pricing plans starting from $9.99/month for indie artists, with enterprise solutions available. Contact us for custom pricing based on your needs! 💰",
+                "features": "Loop offers music distribution, rights management, analytics, revenue tracking, playlist pitching, and collaboration tools. Everything you need to manage your music career! ✨",
+                "how": "Getting started is easy! Sign up for a free trial, upload your music, set your distribution preferences, and we'll handle the rest. Your music will be live on streaming platforms within 24-48 hours! 🚀",
+                "contact": "You can reach our team at nick@loopdsp.com or follow us on Instagram @loop_mp3 for updates and tips! 📧",
+                "integration": "Loop integrates with Spotify, Apple Music, YouTube Music, Amazon Music, Bandcamp, and 150+ other platforms. We also connect with major publishing and licensing services! 🔗",
+                "default": "Great question! Loop is designed to simplify music management for artists of all levels. Whether you're looking for distribution, analytics, or rights management, we've got you covered. What specific aspect interests you most? 🎶"
+            };
+
+            function getResponse(text) {
+                const lowerText = text.toLowerCase();
+                for (const [key, response] of Object.entries(sampleResponses)) {
+                    if (lowerText.includes(key)) {
+                        return response;
+                    }
+                }
+                return sampleResponses.default;
+            }
+
+            async function sendMessage(text) {
+                // Add user message
+                const userEl = document.createElement('div');
+                userEl.className = 'message user-message';
+                userEl.textContent = text;
+                messages.appendChild(userEl);
+
+                // Add loading indicator
+                const loadingEl = document.createElement('div');
+                loadingEl.className = 'message bot-message';
+                loadingEl.innerHTML = '<div class="loading"></div>';
+                messages.appendChild(loadingEl);
+                messages.scrollTop = messages.scrollHeight;
+
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+
+                // Remove loading and add bot response
+                messages.removeChild(loadingEl);
+                const botEl = document.createElement('div');
+                botEl.className = 'message bot-message';
+                botEl.textContent = getResponse(text);
+                messages.appendChild(botEl);
+                messages.scrollTop = messages.scrollHeight;
+
+                // TODO: Implement actual OpenAI API integration via serverless function
+                // const res = await fetch('/.netlify/functions/openai', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ prompt: text })
+                // });
+                // const { reply } = await res.json();
+            }
+
+            form.addEventListener('submit', e => {
+                e.preventDefault();
+                const txt = input.value.trim();
+                if (!txt) return;
+                input.value = '';
+                sendMessage(txt);
+            });
+
+            // Allow Enter to submit
+            input.addEventListener('keypress', e => {
+                if (e.key === 'Enter') {
+                    form.dispatchEvent(new Event('submit'));
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

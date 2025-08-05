@@ -104,16 +104,18 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="relative w-full min-h-screen bg-black text-white">
       {/* Site Header */}
       <header className="site-header" data-testid="site-header">
-        <a className="logo" href="/" data-testid="logo-link">
-          <img src="/assets/LoopIconNew.svg" alt="Loop Logo" data-testid="logo-image" />
-        </a>
-        <nav className="nav-links" data-testid="nav-links">
-          <a className="btn" href="mailto:nick@loopdsp.com" data-testid="btn-contact">Contact</a>
-          <a className="btn" href="https://instagram.com/loop_mp3" target="_blank" rel="noopener noreferrer" data-testid="btn-instagram">Instagram</a>
-        </nav>
+        <div className="header-left">
+          <a className="logo" href="/" data-testid="logo-link">
+            <img src="/assets/LoopIconNew.svg?v=2" alt="Loop Logo" data-testid="logo-image" />
+          </a>
+          <nav className="nav-links" data-testid="nav-links">
+            <a className="btn" href="mailto:nick@loopdsp.com" data-testid="btn-contact">Contact</a>
+            <a className="btn" href="https://instagram.com/loop_mp3" target="_blank" rel="noopener noreferrer" data-testid="btn-instagram">Instagram</a>
+          </nav>
+        </div>
       </header>
 
       {/* Hero Loop Section */}
@@ -134,8 +136,9 @@ export default function Home() {
         
         <div className="hero-text" data-testid="hero-text">
           <h1 className="headline" data-testid="headline">
-            The World's <span className="highlight"><i>First</i></span><br />
-            Digital Music Manager
+            The World's<br />
+            <span className="highlight"><i>First</i></span> Digital<br />
+            Music Manager
           </h1>
         </div>
 
