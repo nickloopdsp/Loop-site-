@@ -294,16 +294,51 @@ h2 {
   z-index: 1;
 }
 
+/* Tablet and smaller laptops */
+@media (max-width: 1024px) {
+  .animation-container {
+    width: 380px;
+    height: 380px;
+  }
+}
+
+/* Mobile tablets */
 @media (max-width: 768px) {
   .animation-container { 
-    width: 340px; 
-    height: 340px; 
+    width: 300px; 
+    height: 300px; 
+  }
+}
+
+/* Large mobile phones */
+@media (max-width: 640px) {
+  .animation-container {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+/* Small mobile phones */
+@media (max-width: 480px) {
+  .animation-container {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+  .animation-container {
+    width: 180px;
+    height: 180px;
   }
 }
 
 /* Gradient sphere */
 .gradient-sphere {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 450px; 
   height: 450px;
   border-radius: 50%;
@@ -337,10 +372,43 @@ h2 {
   to   { transform: rotate(450deg); }
 }
 
+/* Tablet and smaller laptops */
+@media (max-width: 1024px) {
+  .gradient-sphere {
+    width: 380px;
+    height: 380px;
+  }
+}
+
+/* Mobile tablets */
 @media (max-width: 768px) {
   .gradient-sphere { 
-    width: 150px; 
-    height: 150px; 
+    width: 300px; 
+    height: 300px; 
+  }
+}
+
+/* Large mobile phones */
+@media (max-width: 640px) {
+  .gradient-sphere {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+/* Small mobile phones */
+@media (max-width: 480px) {
+  .gradient-sphere {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+  .gradient-sphere {
+    width: 180px;
+    height: 180px;
   }
 }
 
@@ -370,17 +438,74 @@ h2 {
   100% { width: 105vw; height: 105vw; opacity: 0.1; transform: translate(-50%, -50%); }
 }
 
-@media (max-width: 768px) {
-  .pulsing { 
-    border-width: 1.3px; 
-    animation-name: pulse-mobile; 
-  }
+@keyframes pulse-tablet {
+  0%   { width: 390px; height: 390px; opacity: 1; transform: translate(-50%, -50%); }
+  50%  { width: 85vw; height: 85vw; opacity: 0.3; transform: translate(-50%, -50%); }
+  100% { width: 100vw; height: 100vw; opacity: 0.1; transform: translate(-50%, -50%); }
+}
+
+@keyframes pulse-mobile-large {
+  0%   { width: 310px; height: 310px; opacity: 1; transform: translate(-50%, -50%); }
+  50%  { width: 80vw; height: 80vw; opacity: 0.3; transform: translate(-50%, -50%); }
+  100% { width: 95vw; height: 95vw; opacity: 0.1; transform: translate(-50%, -50%); }
 }
 
 @keyframes pulse-mobile {
-  0%   { width: 150px; height: 150px; opacity: 1; transform: translate(-50%, -50%); }
-  50%  { width: 80vw; height: 80vw; opacity: 0.3; transform: translate(-50%, -50%); }
-  100% { width: 95vw; height: 95vw; opacity: 0.1; transform: translate(-50%, -50%); }
+  0%   { width: 260px; height: 260px; opacity: 1; transform: translate(-50%, -50%); }
+  50%  { width: 75vw; height: 75vw; opacity: 0.3; transform: translate(-50%, -50%); }
+  100% { width: 90vw; height: 90vw; opacity: 0.1; transform: translate(-50%, -50%); }
+}
+
+@keyframes pulse-mobile-small {
+  0%   { width: 210px; height: 210px; opacity: 1; transform: translate(-50%, -50%); }
+  50%  { width: 70vw; height: 70vw; opacity: 0.3; transform: translate(-50%, -50%); }
+  100% { width: 85vw; height: 85vw; opacity: 0.1; transform: translate(-50%, -50%); }
+}
+
+@keyframes pulse-mobile-tiny {
+  0%   { width: 190px; height: 190px; opacity: 1; transform: translate(-50%, -50%); }
+  50%  { width: 65vw; height: 65vw; opacity: 0.3; transform: translate(-50%, -50%); }
+  100% { width: 80vw; height: 80vw; opacity: 0.1; transform: translate(-50%, -50%); }
+}
+
+/* Tablet and smaller laptops */
+@media (max-width: 1024px) {
+  .pulsing {
+    border-width: 1.5px;
+    animation-name: pulse-tablet;
+  }
+}
+
+/* Mobile tablets */
+@media (max-width: 768px) {
+  .pulsing { 
+    border-width: 1.3px; 
+    animation-name: pulse-mobile-large; 
+  }
+}
+
+/* Large mobile phones */
+@media (max-width: 640px) {
+  .pulsing {
+    border-width: 1.2px;
+    animation-name: pulse-mobile;
+  }
+}
+
+/* Small mobile phones */
+@media (max-width: 480px) {
+  .pulsing {
+    border-width: 1.1px;
+    animation-name: pulse-mobile-small;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+  .pulsing {
+    border-width: 1px;
+    animation-name: pulse-mobile-tiny;
+  }
 }
 
 /* Headline text */

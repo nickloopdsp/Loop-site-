@@ -38,13 +38,13 @@ export default function Home() {
       (el as HTMLElement).style.opacity = '1';
     });
     
-    // Show gradient sphere after 3 seconds
+    // Show gradient sphere after 1 second
     const sphereTimer = setTimeout(() => {
       const sphere = document.querySelector('.gradient-sphere') as HTMLElement;
       if (sphere) {
         sphere.style.opacity = '1';
       }
-    }, 3000);
+    }, 1000);
     
     // Show hero text after 7 seconds
     const textTimer = setTimeout(() => {
