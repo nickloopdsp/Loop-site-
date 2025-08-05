@@ -312,6 +312,9 @@ h2 {
 /* Pulsing lines */
 .pulsing {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
   border: 2px solid hsla(0, 0%, 100%, 0.46);
   animation: pulse 6.5s infinite;
@@ -327,9 +330,9 @@ h2 {
 }
 
 @keyframes pulse {
-  0%   { width: 460px; height: 460px; opacity: 1; }
-  50%  { width: 100vw; height: 100vw; opacity: 0.3; }
-  100% { width: 115vw; height: 115vw; opacity: 0.1; }
+  0%   { width: 460px; height: 460px; opacity: 1; transform: translate(-50%, -50%); }
+  50%  { width: 100vw; height: 100vw; opacity: 0.3; transform: translate(-50%, -50%); }
+  100% { width: 115vw; height: 115vw; opacity: 0.1; transform: translate(-50%, -50%); }
 }
 
 @media (max-width: 768px) {
@@ -340,9 +343,9 @@ h2 {
 }
 
 @keyframes pulse-mobile {
-  0%   { width: 150px; height: 150px; opacity: 1; }
-  50%  { width: 100vw; height: 100vw; opacity: 0.3; }
-  100% { width: 115vw; height: 115vw; opacity: 0.1; }
+  0%   { width: 150px; height: 150px; opacity: 1; transform: translate(-50%, -50%); }
+  50%  { width: 100vw; height: 100vw; opacity: 0.3; transform: translate(-50%, -50%); }
+  100% { width: 115vw; height: 115vw; opacity: 0.1; transform: translate(-50%, -50%); }
 }
 
 /* Headline text */
