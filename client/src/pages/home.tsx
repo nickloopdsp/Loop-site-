@@ -22,6 +22,30 @@ export default function Home() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  // Chat suggestions
+  const suggestions = [
+    'What can Loop do for my release? ',
+    'How does MC build a growth plan?',
+    'What data does Loop analyze?',
+    'Can Loop help with touring?'
+  ];
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
+
+  // Hero dynamic phrases
+  const heroPhrases = [
+    'own success',
+    'grow louder',
+    'take control',
+    'sell out shows',
+    'move as one'
+  ];
+  const [heroPhraseIndex, setHeroPhraseIndex] = useState(0);
+  const [isDark, setIsDark] = useState(true);
+
+  const toTitleCase = (input: string) => {
+    return input.replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1));
+  };
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -30,7 +54,32 @@ export default function Home() {
     scrollToBottom();
   }, [messages]);
 
-  // Animation initialization
+  // Theme initialization
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('theme');
+      let prefersDark = false;
+      try {
+        prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      } catch {}
+      const useDark = stored ? stored === 'dark' : prefersDark || true;
+      setIsDark(useDark);
+      document.documentElement.classList.toggle('dark', useDark);
+      document.documentElement.classList.toggle('light', !useDark);
+    } catch {}
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    setIsDark(next);
+    document.documentElement.classList.toggle('dark', next);
+    document.documentElement.classList.toggle('light', !next);
+    try {
+      localStorage.setItem('theme', next ? 'dark' : 'light');
+    } catch {}
+  };
+
+  // Animation + interactivity initialization
   useEffect(() => {
     // Start pulsing animations
     const pulsingElements = document.querySelectorAll('.pulsing');
@@ -94,9 +143,21 @@ export default function Home() {
       chatContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
     }
 
+    // Rotate chat suggestions auto
+    const suggestionTimer = setInterval(() => {
+      setSuggestionIndex((i) => (i + 1) % suggestions.length);
+    }, 3500);
+
+    // Rotate hero phrases every 2 seconds
+    const heroPhraseTimer = setInterval(() => {
+      setHeroPhraseIndex((i) => (i + 1) % heroPhrases.length);
+    }, 2000);
+
     return () => {
       clearTimeout(sphereTimer);
       clearTimeout(textTimer);
+      clearInterval(suggestionTimer);
+      clearInterval(heroPhraseTimer);
       if (chatContainer) {
         chatContainer.removeEventListener('mousemove', handleMouseMove);
         chatContainer.removeEventListener('touchmove', handleTouchMove);
@@ -149,7 +210,7 @@ export default function Home() {
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-black text-white">
+    <div className="relative w-full min-h-screen bg-background text-foreground">
       {/* Site Header */}
       <header className="site-header" data-testid="site-header">
         <div className="header-left">
@@ -161,6 +222,49 @@ export default function Home() {
             <a className="btn" href="https://instagram.com/loop_mp3" target="_blank" rel="noopener noreferrer" data-testid="btn-instagram">Instagram</a>
           </nav>
         </div>
+        <form
+          className="waitlist-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget as HTMLFormElement);
+            const email = String(formData.get('email') || '').trim();
+            if (!email) return;
+            fetch('/api/waitlist', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email })
+            })
+              .then(async (r) => {
+                if (!r.ok) throw new Error(await r.text());
+                (e.currentTarget as HTMLFormElement).reset();
+                alert('Thanks! You\'re on the waitlist.');
+              })
+              .catch(() => {
+                alert('There was a problem joining the waitlist. Please try again.');
+              });
+          }}
+        >
+          <input
+            type="email"
+            name="email"
+            className="waitlist-input"
+            placeholder="Join the waitlist"
+            aria-label="Email address"
+            required
+            autoComplete="email"
+          />
+          <button
+            type="button"
+            className="theme-toggle"
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            onClick={toggleTheme}
+            data-testid="theme-toggle"
+            title={isDark ? 'Light mode' : 'Dark mode'}
+          >
+            {isDark ? '☀️' : '🌙'}
+          </button>
+          <button type="submit" className="waitlist-button">Join</button>
+        </form>
       </header>
 
       {/* Hero Loop Section */}
@@ -181,12 +285,17 @@ export default function Home() {
         
         <div className="hero-text" data-testid="hero-text">
           <h1 className="headline" data-testid="headline">
-            The World's<br />
-            <span className="highlight"><i>First</i></span> Digital<br />
-            Music Manager
+            Where Artists<br />
+            & Their Teams<br />
+            <span className="highlight"><span
+              key={heroPhraseIndex}
+              className="dynamic-phrase dynamic-entry glitch"
+              data-text={toTitleCase(heroPhrases[heroPhraseIndex])}
+            >
+              {toTitleCase(heroPhrases[heroPhraseIndex])}
+            </span></span>
           </h1>
         </div>
-
         {/* Chat Container */}
         <div ref={chatContainerRef} className="chat-container" data-testid="chat-container">
           <div className="chat-header" data-testid="chat-header">Ask MC</div>
@@ -206,6 +315,18 @@ export default function Home() {
               </div>
             )}
             <div ref={messagesEndRef} />
+          </div>
+          <div className="chat-suggestions" data-testid="chat-suggestions">
+            {suggestions.map((s, i) => (
+              <button
+                key={s}
+                className={`suggestion ${i === suggestionIndex ? 'active' : ''}`}
+                onClick={() => sendMessage(s)}
+                type="button"
+              >
+                {s}
+              </button>
+            ))}
           </div>
           <form className="chat-input" onSubmit={handleSubmit} data-testid="chat-form">
             <input 
