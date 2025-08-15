@@ -688,14 +688,14 @@ h2 {
 .page-hero {
   position: relative;
   width: 100%;
-  min-height: 120dvh;
+  min-height: 110dvh;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   overflow: visible;
-  padding-bottom: 120px;
-  margin-bottom: 150px; /* Push footer down without affecting content positioning */
+  padding-bottom: 80px;
+  margin-bottom: 120px; /* Push footer down without affecting content positioning */
 }
 
 @media (max-width: 1024px) and (min-width: 769px) {
@@ -704,9 +704,9 @@ h2 {
 
 @media (max-width: 768px) {
   .page-hero { 
-    min-height: 110dvh;
-    padding-bottom: 100px;
-    margin-bottom: 120px; /* Mobile footer spacing */
+    min-height: 100dvh;
+    padding-bottom: 80px;
+    margin-bottom: 100px; /* Mobile footer spacing */
   }
 }
 
@@ -1118,10 +1118,10 @@ h2 {
 /* Mobile: let the chat scroll with the page and be more compact/friendly */
 @media (max-width: 640px) {
   .page-hero {
-    min-height: 120dvh; /* give room for hero + chat in flow */
+    min-height: 110dvh; /* give room for hero + chat in flow */
     padding-top: 32vh; /* reserve space for headline/animation so chat sits lower */
-    padding-bottom: 96px;
-    margin-bottom: 96px;
+    padding-bottom: 80px;
+    margin-bottom: 80px;
   }
 
   .chat-container {
