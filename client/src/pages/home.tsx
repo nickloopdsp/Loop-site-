@@ -366,7 +366,8 @@ export default function Home() {
             </span></span>
           </h1>
         </div>
-        {/* Chat Container */}
+        {/* Chat Container - Hidden for now */}
+        {/* 
         <div ref={chatContainerRef} className="chat-container" data-testid="chat-container">
           <div className="chat-header" data-testid="chat-header">Ask MC</div>
           <div className="chat-messages" data-testid="chat-messages">
@@ -418,6 +419,7 @@ export default function Home() {
             </button>
           </form>
         </div>
+        */}
       </section>
 
       {/* Site Footer */}

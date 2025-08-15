@@ -383,7 +383,7 @@ h2 {
   align-items: center;
   gap: 0.4rem;
   background: color-mix(in oklab, var(--foreground) 6%, transparent);
-  border: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent);
+  border: 1px solid var(--loop-green);
   border-radius: 999px;
   padding: 0.25rem 0.3rem 0.25rem 0.75rem;
   backdrop-filter: blur(10px);
@@ -395,6 +395,7 @@ h2 {
   border-color: rgba(2,234,152,0.6);
   box-shadow: 0 0 20px rgba(2,234,152,0.2);
   position: relative;
+  animation: secretCodeGlowPulse 3s ease-in-out infinite;
 }
 
 .waitlist-form.secret-code-mode .waitlist-input {
@@ -411,6 +412,18 @@ h2 {
 @keyframes secretCodeRotate {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+@keyframes secretCodeGlowPulse {
+  0% { 
+    box-shadow: 0 0 10px rgba(2, 234, 152, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(2, 234, 152, 0.6);
+  }
+  100% { 
+    box-shadow: 0 0 10px rgba(2, 234, 152, 0.3);
+  }
 }
 
 /* Theme toggle button next to waitlist */
@@ -439,16 +452,30 @@ h2 {
 }
 
 .waitlist-input {
-  background: transparent;
+  background: transparent !important;
   border: none;
   outline: none;
-  color: color-mix(in oklab, var(--foreground) 95%, transparent);
+  color: var(--loop-green);
   font-size: 0.85rem;
   width: 210px;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.waitlist-input:focus {
+  background: transparent !important;
+}
+
+.waitlist-input:-webkit-autofill,
+.waitlist-input:-webkit-autofill:hover,
+.waitlist-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: inherit !important;
+  background: transparent !important;
 }
 
 .waitlist-input::placeholder {
-  color: color-mix(in oklab, var(--foreground) 60%, transparent);
+  color: rgba(2, 234, 152, 0.7);
+  transition: color 0.3s ease;
 }
 
 .waitlist-button {
@@ -456,8 +483,8 @@ h2 {
   overflow: hidden;
   padding: 0.35rem 0.9rem;
   color: hsla(0, 0%, 0%, 0.9);
-  background: linear-gradient(135deg, rgba(2,234,152,0.35), rgba(2,234,152,0.15));
-  border: 1px solid rgba(2,234,152,0.45);
+  background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
+  border: 1px solid rgba(255,255,255,0.3);
   border-radius: 999px;
   font-weight: 700;
   font-size: 0.82rem;
@@ -465,9 +492,9 @@ h2 {
   transform: translateY(-2px);
   padding-bottom: 0.45rem;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.35),
-    0 2px 8px rgba(2,234,152,0.25),
-    0 2px 6px rgba(0,0,0,0.35);
+    inset 0 1px 0 rgba(255,255,255,0.4),
+    0 2px 8px rgba(255,255,255,0.15),
+    0 2px 6px rgba(0,0,0,0.2);
   transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease;
 }
 
@@ -487,10 +514,10 @@ h2 {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(circle at 30% 20%, rgba(2,234,152,0.35), rgba(2,234,152,0.15) 40%, transparent 60%);
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.2), rgba(255,255,255,0.1) 40%, transparent 60%);
   mix-blend-mode: overlay;
   pointer-events: none;
-  opacity: 0.55;
+  opacity: 0.6;
   transition: opacity 0.25s ease;
 }
 
@@ -506,12 +533,12 @@ h2 {
 }
 
 .waitlist-button:hover {
-  background: linear-gradient(135deg, rgba(2,234,152,0.45), rgba(2,234,152,0.22));
-  border-color: rgba(2,234,152,0.65);
+  background: linear-gradient(135deg, rgba(255,255,255,0.35), rgba(255,255,255,0.15));
+  border-color: rgba(255,255,255,0.45);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.5),
-    0 8px 22px rgba(2,234,152,0.28),
-    0 3px 12px rgba(0,0,0,0.45);
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    0 8px 22px rgba(255,255,255,0.2),
+    0 3px 12px rgba(0,0,0,0.3);
   transform: translateY(-1px);
 }
 
@@ -536,6 +563,85 @@ h2 {
 @media (max-width: 768px) {
   .waitlist-input { width: 150px; font-size: 0.8rem; }
   .waitlist-button { padding: 0.35rem 0.7rem; font-size: 0.75rem; }
+}
+
+/* Light mode styles for waitlist elements */
+:root {
+  .waitlist-form {
+    border-color: var(--loop-green);
+    background: rgba(2, 234, 152, 0.05);
+  }
+  
+  .waitlist-input {
+    color: rgba(0, 0, 0, 0.9);
+    background: transparent;
+  }
+  
+  .waitlist-input::placeholder {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .waitlist-button {
+    background: linear-gradient(135deg, rgba(2, 234, 152, 0.25), rgba(2, 234, 152, 0.15));
+    border: 1px solid rgba(2, 234, 152, 0.5);
+    color: rgba(0, 0, 0, 0.9);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.8),
+      0 2px 8px rgba(2, 234, 152, 0.3),
+      0 2px 6px rgba(0,0,0,0.15);
+  }
+  
+  .waitlist-button::after {
+    background: radial-gradient(circle at 30% 20%, rgba(2, 234, 152, 0.3), rgba(2, 234, 152, 0.2) 40%, transparent 60%);
+  }
+  
+  .waitlist-button:hover {
+    background: linear-gradient(135deg, rgba(2, 234, 152, 0.35), rgba(2, 234, 152, 0.2));
+    border-color: rgba(2, 234, 152, 0.65);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.9),
+      0 8px 22px rgba(2, 234, 152, 0.35),
+      0 3px 12px rgba(0,0,0,0.2);
+  }
+  
+  .waitlist-form.secret-code-mode {
+    border-color: rgba(2,234,152,0.7);
+    box-shadow: 0 0 20px rgba(2,234,152,0.25);
+    background: rgba(2, 234, 152, 0.08);
+  }
+}
+
+/* Dark mode styles for waitlist elements */
+.dark .waitlist-input {
+  color: var(--loop-green);
+  background: transparent;
+}
+
+.dark .waitlist-input::placeholder {
+  color: rgba(2, 234, 152, 0.7);
+}
+
+.dark .waitlist-button {
+  background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
+  border: 1px solid rgba(255,255,255,0.3);
+  color: hsla(0, 0%, 0%, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.4),
+    0 2px 8px rgba(255,255,255,0.15),
+    0 2px 6px rgba(0,0,0,0.2);
+}
+
+.dark .waitlist-button::after {
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.2), rgba(255,255,255,0.1) 40%, transparent 60%);
+}
+
+.dark .waitlist-button:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.35), rgba(255,255,255,0.15));
+  border-color: rgba(255,255,255,0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    0 8px 22px rgba(255,255,255,0.2),
+    0 3px 12px rgba(0,0,0,0.3);
 }
 
 /* Hero Loop Styles */
