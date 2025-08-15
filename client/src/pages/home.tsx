@@ -19,6 +19,9 @@ export default function Home() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [joinButtonClicks, setJoinButtonClicks] = useState(0);
+  const [isSecretCodeMode, setIsSecretCodeMode] = useState(false);
+  const [secretCodeTimeout, setSecretCodeTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -162,8 +165,12 @@ export default function Home() {
         chatContainer.removeEventListener('mousemove', handleMouseMove);
         chatContainer.removeEventListener('touchmove', handleTouchMove);
       }
+      // Clear secret code timeout
+      if (secretCodeTimeout) {
+        clearTimeout(secretCodeTimeout);
+      }
     };
-  }, []);
+  }, [secretCodeTimeout]);
 
   const sendMessage = async (text: string) => {
     if (!text.trim()) return;
@@ -209,6 +216,82 @@ export default function Home() {
     sendMessage(inputValue);
   };
 
+  const handleJoinButtonClick = () => {
+    const newClickCount = joinButtonClicks + 1;
+    setJoinButtonClicks(newClickCount);
+    
+    // Add click animation
+    const joinButton = document.querySelector('.waitlist-button') as HTMLElement;
+    if (joinButton) {
+      joinButton.classList.add('clicked');
+      setTimeout(() => {
+        joinButton.classList.remove('clicked');
+      }, 300);
+    }
+    
+    if (newClickCount === 2) {
+      // Toggle between secret code mode and normal waitlist mode
+      setIsSecretCodeMode(!isSecretCodeMode);
+      setJoinButtonClicks(0); // Reset click count
+      
+      // Clear any existing timeout
+      if (secretCodeTimeout) {
+        clearTimeout(secretCodeTimeout);
+        setSecretCodeTimeout(null);
+      }
+      
+      // Only set timeout if entering secret code mode
+      if (!isSecretCodeMode) {
+        // Auto-reset secret code mode after 30 seconds of inactivity
+        const timeoutId = setTimeout(() => {
+          setIsSecretCodeMode(false);
+          setSecretCodeTimeout(null);
+        }, 30000);
+        
+        setSecretCodeTimeout(timeoutId);
+      }
+    }
+  };
+
+  const handleWaitlistSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const input = String(formData.get('email') || '').trim();
+    
+    if (!input) return;
+    
+    if (isSecretCodeMode) {
+      // Handle secret code submission
+      console.log('Secret code entered:', input);
+      // TODO: Redirect to login page when implemented
+      alert('Secret code received! Login page coming soon.');
+      setIsSecretCodeMode(false);
+      
+      // Clear timeout when exiting secret code mode
+      if (secretCodeTimeout) {
+        clearTimeout(secretCodeTimeout);
+        setSecretCodeTimeout(null);
+      }
+      
+      (e.currentTarget as HTMLFormElement).reset();
+    } else {
+      // Handle normal email submission
+      fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: input })
+      })
+        .then(async (r) => {
+          if (!r.ok) throw new Error(await r.text());
+          (e.currentTarget as HTMLFormElement).reset();
+          alert('Thanks! You\'re on the waitlist.');
+        })
+        .catch(() => {
+          alert('There was a problem joining the waitlist. Please try again.');
+        });
+    }
+  };
+
   return (
     <div className="relative w-full min-h-screen bg-background text-foreground">
       {/* Site Header */}
@@ -223,35 +306,16 @@ export default function Home() {
           </nav>
         </div>
         <form
-          className="waitlist-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget as HTMLFormElement);
-            const email = String(formData.get('email') || '').trim();
-            if (!email) return;
-            fetch('/api/waitlist', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email })
-            })
-              .then(async (r) => {
-                if (!r.ok) throw new Error(await r.text());
-                (e.currentTarget as HTMLFormElement).reset();
-                alert('Thanks! You\'re on the waitlist.');
-              })
-              .catch(() => {
-                alert('There was a problem joining the waitlist. Please try again.');
-              });
-          }}
+          className={`waitlist-form ${isSecretCodeMode ? 'secret-code-mode' : ''}`}
+          onSubmit={handleWaitlistSubmit}
         >
           <input
-            type="email"
+            type={isSecretCodeMode ? "text" : "email"}
             name="email"
             className="waitlist-input"
-            placeholder="Join the waitlist"
-            aria-label="Email address"
-            required
-            autoComplete="email"
+            placeholder={isSecretCodeMode ? "Enter Code" : "Join the waitlist"}
+            aria-label={isSecretCodeMode ? "Secret code" : "Email address"}
+            autoComplete={isSecretCodeMode ? "off" : "email"}
           />
           <button
             type="button"
@@ -263,7 +327,13 @@ export default function Home() {
           >
             {isDark ? '☀️' : '🌙'}
           </button>
-          <button type="submit" className="waitlist-button">Join</button>
+          <button 
+            type="submit" 
+            className="waitlist-button"
+            onClick={handleJoinButtonClick}
+          >
+            Join
+          </button>
         </form>
       </header>
 
@@ -340,6 +410,7 @@ export default function Home() {
             />
             <button 
               type="submit" 
+              className="chat-input-button"
               disabled={isLoading || !inputValue.trim()}
               data-testid="chat-submit"
             >
